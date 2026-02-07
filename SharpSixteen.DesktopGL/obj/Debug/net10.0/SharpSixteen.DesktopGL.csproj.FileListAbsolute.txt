@@ -198,3 +198,7 @@
 /home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.DesktopGL/obj/Debug/net10.0/SharpSixteen.pdb
 /home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.DesktopGL/obj/Debug/net10.0/SharpSixteen.DesktopGL.genruntimeconfig.cache
 /home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.DesktopGL/obj/Debug/net10.0/ref/SharpSixteen.dll
+/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.DesktopGL/bin/Debug/net10.0/Content/Sprites/Jrpg/EnemySlime.xnb
+/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.DesktopGL/bin/Debug/net10.0/Content/Sprites/Jrpg/Hero.xnb
+/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.DesktopGL/bin/Debug/net10.0/Content/Sprites/Jrpg/Npc.xnb
+/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.DesktopGL/bin/Debug/net10.0/Content/Tiles/House.xnb

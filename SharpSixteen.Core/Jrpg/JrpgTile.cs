@@ -19,5 +19,5 @@ public struct JrpgTile
     /// <summary>When Kind is Door, spawn index on target map (0-based).</summary>
     public int DoorSpawnIndex { get; set; }
 
-    public bool IsWalkable => Kind == JrpgTileKind.Floor || Kind == JrpgTileKind.Door || Kind == JrpgTileKind.Encounter;
+    public bool IsWalkable => Kind == JrpgTileKind.Floor || Kind == JrpgTileKind.Door || Kind == JrpgTileKind.Encounter || Kind == JrpgTileKind.Npc;
 }

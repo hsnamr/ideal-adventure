@@ -15,6 +15,8 @@ public class BattleScreen : GameScreen
 {
     private SpriteFont _font;
     private Texture2D _panel;
+    private Texture2D _playerSprite;
+    private Texture2D _enemySprite;
     private ContentManager _content;
     private readonly Action<ScreenManager, bool> _onBattleEnd; // (manager, victory)
     private int _menuIndex;
@@ -45,6 +47,8 @@ public class BattleScreen : GameScreen
         _content = new ContentManager(ScreenManager.Game.Services, "Content");
         _font = _content.Load<SpriteFont>("Fonts/Hud");
         try { _panel = _content.Load<Texture2D>("Sprites/blank"); } catch { }
+        try { _playerSprite = _content.Load<Texture2D>("Sprites/Jrpg/Hero"); } catch { _playerSprite = null; }
+        try { _enemySprite = _content.Load<Texture2D>("Sprites/Jrpg/EnemySlime"); } catch { _enemySprite = null; }
     }
 
     public override void UnloadContent()
@@ -150,6 +154,14 @@ public class BattleScreen : GameScreen
         // Dark background
         if (_panel != null)
             batch.Draw(_panel, new Rectangle(0, 0, (int)viewSize.X, (int)viewSize.Y), Color.DarkSlateGray * 0.95f);
+
+        // Sprites: player left, enemy right (scaled 3x for visibility)
+        int scale = 3;
+        int spriteSize = 16 * scale;
+        if (_playerSprite != null)
+            batch.Draw(_playerSprite, new Rectangle(40, (int)viewSize.Y / 2 - spriteSize / 2 - 30, spriteSize, spriteSize), Color.White);
+        if (_enemySprite != null)
+            batch.Draw(_enemySprite, new Rectangle((int)viewSize.X - 40 - spriteSize, (int)viewSize.Y / 2 - spriteSize / 2 - 30, spriteSize, spriteSize), Color.White);
 
         // Battle panel (bottom)
         int panelH = (int)viewSize.Y / 3;

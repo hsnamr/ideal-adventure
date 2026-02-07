@@ -12,5 +12,9 @@ public enum JrpgTileKind
     /// <summary>Door/stairs to another map; TargetMapId and spawn index set in map data.</summary>
     Door,
     /// <summary>Tile that can trigger random battles (e.g. cave floor).</summary>
-    Encounter
+    Encounter,
+    /// <summary>House/building wall (impassable, drawn with house texture).</summary>
+    House,
+    /// <summary>Floor with an NPC standing on it.</summary>
+    Npc
 }

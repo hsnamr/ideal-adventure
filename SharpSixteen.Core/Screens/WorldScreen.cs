@@ -1,6 +1,7 @@
 using System;
 using SharpSixteen.Core.Inputs;
 using SharpSixteen.Core.Jrpg;
+using SharpSixteen.Core.Jrpg.MapData;
 using SharpSixteen.ScreenManagers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -20,6 +21,7 @@ public class WorldScreen : GameScreen
     private Vector2 _playerPixel;      // position in pixels
     private Point _playerTile;        // current tile for doors/collision
     private Texture2D _playerTexture;
+    private Texture2D _npcTexture;
     private ContentManager _content = null!;
     private float _moveCooldown;       // grid-snap movement delay
     private const float MoveDelay = 0.15f;
@@ -46,11 +48,19 @@ public class WorldScreen : GameScreen
         _playerPixel = new Vector2(spawn.X * JrpgTile.Width, spawn.Y * JrpgTile.Height);
         try
         {
-            _playerTexture = _content.Load<Texture2D>("Sprites/blank");
+            _playerTexture = _content.Load<Texture2D>("Sprites/Jrpg/Hero");
         }
         catch
         {
-            _playerTexture = null;
+            try { _playerTexture = _content.Load<Texture2D>("Sprites/blank"); } catch { _playerTexture = null; }
+        }
+        try
+        {
+            _npcTexture = _content.Load<Texture2D>("Sprites/Jrpg/Npc");
+        }
+        catch
+        {
+            _npcTexture = null;
         }
     }
 
@@ -68,6 +78,12 @@ public class WorldScreen : GameScreen
 
     public override void HandleInput(GameTime gameTime, InputState inputState)
     {
+        if (inputState.IsMenuCancel(ControllingPlayer, out _))
+        {
+            ScreenManager.AddScreen(new InGameMenuScreen(), ControllingPlayer);
+            return;
+        }
+
         if (_moveCooldown > 0) return;
 
         int dx = 0, dy = 0;
@@ -137,7 +153,17 @@ public class WorldScreen : GameScreen
         if (_playerTexture != null)
             batch.Draw(_playerTexture,
                 new Rectangle((int)_playerPixel.X, (int)_playerPixel.Y, JrpgTile.Width, JrpgTile.Height),
-                Color.Cyan);
+                Color.White);
+
+        if (_npcTexture != null)
+        {
+            foreach (var npc in _map.NpcPositions)
+            {
+                batch.Draw(_npcTexture,
+                    new Rectangle(npc.X * JrpgTile.Width, npc.Y * JrpgTile.Height, JrpgTile.Width, JrpgTile.Height),
+                    Color.White);
+            }
+        }
 
         batch.End();
         base.Draw(gameTime);

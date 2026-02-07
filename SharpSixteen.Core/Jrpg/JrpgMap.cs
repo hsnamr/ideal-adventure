@@ -16,6 +16,7 @@ public class JrpgMap
 {
     private JrpgTile[,] _tiles;
     private readonly List<Point> _spawns = new();
+    private readonly List<Point> _npcs = new();
     private readonly ContentManager _content;
     private readonly string _tileSetPrefix;
 
@@ -23,6 +24,7 @@ public class JrpgMap
     public int Height => _tiles.GetLength(1);
     public MapId Id { get; }
     public IReadOnlyList<Point> Spawns => _spawns;
+    public IReadOnlyList<Point> NpcPositions => _npcs;
 
     /// <param name="tileSetPrefix">Content path prefix. Use "Tiles/" and floor=BlockB0, wall=BlockA0, door=Exit for built-in tiles.</param>
     public JrpgMap(ContentManager content, MapId id, Stream mapStream, string tileSetPrefix = "Tiles/")
@@ -89,9 +91,57 @@ public class JrpgMap
                 tile.DoorTarget = MapId.Town;
                 tile.DoorSpawnIndex = 0;
                 break;
+            case '3':
+                tile.Kind = JrpgTileKind.Door;
+                tile.Texture = LoadTexture("Exit");
+                tile.DoorTarget = MapId.House1;
+                tile.DoorSpawnIndex = 0;
+                _spawns.Add(new Point(x, y));
+                break;
+            case '4':
+                tile.Kind = JrpgTileKind.Door;
+                tile.Texture = LoadTexture("Exit");
+                tile.DoorTarget = MapId.House2;
+                tile.DoorSpawnIndex = 0;
+                _spawns.Add(new Point(x, y));
+                break;
+            case '5':
+                tile.Kind = JrpgTileKind.Door;
+                tile.Texture = LoadTexture("Exit");
+                tile.DoorTarget = MapId.House3;
+                tile.DoorSpawnIndex = 0;
+                _spawns.Add(new Point(x, y));
+                break;
+            case '6':
+                tile.Kind = JrpgTileKind.Door;
+                tile.Texture = LoadTexture("Exit");
+                tile.DoorTarget = MapId.Town;
+                tile.DoorSpawnIndex = 1;
+                break;
+            case '7':
+                tile.Kind = JrpgTileKind.Door;
+                tile.Texture = LoadTexture("Exit");
+                tile.DoorTarget = MapId.Town;
+                tile.DoorSpawnIndex = 2;
+                break;
+            case '8':
+                tile.Kind = JrpgTileKind.Door;
+                tile.Texture = LoadTexture("Exit");
+                tile.DoorTarget = MapId.Town;
+                tile.DoorSpawnIndex = 3;
+                break;
             case 'E':
                 tile.Kind = JrpgTileKind.Encounter;
                 tile.Texture = LoadTexture("BlockB0");
+                break;
+            case 'H':
+                tile.Kind = JrpgTileKind.House;
+                tile.Texture = LoadTexture("House");
+                break;
+            case 'N':
+                tile.Kind = JrpgTileKind.Npc;
+                tile.Texture = LoadTexture("BlockB0");
+                _npcs.Add(new Point(x, y));
                 break;
             default:
                 tile.Kind = JrpgTileKind.Floor;

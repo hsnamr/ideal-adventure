@@ -58,8 +58,16 @@
     <File>/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/Content/Tiles/BlockB1.png</File>
     <File>/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/Content/Tiles/Exit.png</File>
     <File>/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/Content/Tiles/Platform.png</File>
+    <File>/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/Content/Tiles/House.png</File>
+    <File>/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/Content/Sprites/Jrpg/Hero.png</File>
+    <File>/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/Content/Sprites/Jrpg/Npc.png</File>
+    <File>/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/Content/Sprites/Jrpg/EnemySlime.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
