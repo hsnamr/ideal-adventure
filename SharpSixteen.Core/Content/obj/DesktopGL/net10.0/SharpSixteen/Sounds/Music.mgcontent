@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>/home/halamri/Workspace/self/Games/SharpSixteen/SharpSixteen.Core/Content/Sounds/Music.mp3</SourceFile>
+  <SourceFile>/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/Content/Sounds/Music.mp3</SourceFile>
   <SourceTime>2026-02-07T09:12:20.5481668+03:00</SourceTime>
-  <DestFile>/home/halamri/Workspace/self/Games/SharpSixteen/SharpSixteen.Core/Content/bin/DesktopGL/SharpSixteen/Sounds/Music.xnb</DestFile>
-  <DestTime>2026-02-07T09:38:23.0880655+03:00</DestTime>
+  <DestFile>/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/Content/bin/DesktopGL/SharpSixteen/Sounds/Music.xnb</DestFile>
+  <DestTime>2026-02-07T09:43:05.1685478+03:00</DestTime>
   <Importer>Mp3Importer</Importer>
   <ImporterTime>2025-10-20T17:25:32+03:00</ImporterTime>
   <Processor>SongProcessor</Processor>
@@ -15,6 +15,6 @@
   <Dependencies />
   <BuildAsset />
   <BuildOutput>
-    <string>/home/halamri/Workspace/self/Games/SharpSixteen/SharpSixteen.Core/Content/bin/DesktopGL/SharpSixteen/Sounds/Music.ogg</string>
+    <string>/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/Content/bin/DesktopGL/SharpSixteen/Sounds/Music.ogg</string>
   </BuildOutput>
 </PipelineBuildEvent>

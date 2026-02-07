@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>/home/halamri/Workspace/self/Games/SharpSixteen/SharpSixteen.Core/Content/Sounds/MonsterKilled.wav</SourceFile>
+  <SourceFile>/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/Content/Sounds/MonsterKilled.wav</SourceFile>
   <SourceTime>2026-02-07T09:12:20.4601632+03:00</SourceTime>
-  <DestFile>/home/halamri/Workspace/self/Games/SharpSixteen/SharpSixteen.Core/Content/bin/DesktopGL/SharpSixteen/Sounds/MonsterKilled.xnb</DestFile>
-  <DestTime>2026-02-07T09:38:16.7958048+03:00</DestTime>
+  <DestFile>/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/Content/bin/DesktopGL/SharpSixteen/Sounds/MonsterKilled.xnb</DestFile>
+  <DestTime>2026-02-07T09:42:37.8224347+03:00</DestTime>
   <Importer>WavImporter</Importer>
   <ImporterTime>2025-10-20T17:25:32+03:00</ImporterTime>
   <Processor>SoundEffectProcessor</Processor>

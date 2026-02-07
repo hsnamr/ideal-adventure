@@ -229,11 +229,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/halamri/Workspace/self/Games/SharpSixteen/SharpSixteen.DesktopGL/SharpSixteen.DesktopGL.csproj",
+      "projectUniqueName": "/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.DesktopGL/SharpSixteen.DesktopGL.csproj",
       "projectName": "SharpSixteen",
-      "projectPath": "/home/halamri/Workspace/self/Games/SharpSixteen/SharpSixteen.DesktopGL/SharpSixteen.DesktopGL.csproj",
+      "projectPath": "/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.DesktopGL/SharpSixteen.DesktopGL.csproj",
       "packagesPath": "/home/halamri/.nuget/packages/",
-      "outputPath": "/home/halamri/Workspace/self/Games/SharpSixteen/SharpSixteen.DesktopGL/obj/",
+      "outputPath": "/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.DesktopGL/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/halamri/.nuget/NuGet/NuGet.Config"
@@ -249,8 +249,8 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "projectReferences": {
-            "/home/halamri/Workspace/self/Games/SharpSixteen/SharpSixteen.Core/SharpSixteen.Core.csproj": {
-              "projectPath": "/home/halamri/Workspace/self/Games/SharpSixteen/SharpSixteen.Core/SharpSixteen.Core.csproj"
+            "/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/SharpSixteen.Core.csproj": {
+              "projectPath": "/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/SharpSixteen.Core.csproj"
             }
           }
         }

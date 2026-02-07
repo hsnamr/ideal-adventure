@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>/home/halamri/Workspace/self/Games/SharpSixteen/SharpSixteen.Core/Content/Sprites/Player/Die.png</SourceFile>
+  <SourceFile>/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/Content/Sprites/Player/Die.png</SourceFile>
   <SourceTime>2026-02-07T09:12:20.6921728+03:00</SourceTime>
-  <DestFile>/home/halamri/Workspace/self/Games/SharpSixteen/SharpSixteen.Core/Content/bin/DesktopGL/SharpSixteen/Sprites/Player/Die.xnb</DestFile>
-  <DestTime>2026-02-07T09:38:24.353117+03:00</DestTime>
+  <DestFile>/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/Content/bin/DesktopGL/SharpSixteen/Sprites/Player/Die.xnb</DestFile>
+  <DestTime>2026-02-07T09:43:07.3956385+03:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2025-10-20T17:25:32+03:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

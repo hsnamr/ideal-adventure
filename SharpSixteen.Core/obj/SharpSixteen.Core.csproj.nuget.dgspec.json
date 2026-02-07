@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/halamri/Workspace/self/Games/SharpSixteen/SharpSixteen.Core/SharpSixteen.Core.csproj": {}
+    "/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/SharpSixteen.Core.csproj": {}
   },
   "projects": {
-    "/home/halamri/Workspace/self/Games/SharpSixteen/SharpSixteen.Core/SharpSixteen.Core.csproj": {
+    "/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/SharpSixteen.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/halamri/Workspace/self/Games/SharpSixteen/SharpSixteen.Core/SharpSixteen.Core.csproj",
+        "projectUniqueName": "/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/SharpSixteen.Core.csproj",
         "projectName": "SharpSixteen.Core",
-        "projectPath": "/home/halamri/Workspace/self/Games/SharpSixteen/SharpSixteen.Core/SharpSixteen.Core.csproj",
+        "projectPath": "/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/SharpSixteen.Core.csproj",
         "packagesPath": "/home/halamri/.nuget/packages/",
-        "outputPath": "/home/halamri/Workspace/self/Games/SharpSixteen/SharpSixteen.Core/obj/",
+        "outputPath": "/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/halamri/.nuget/NuGet/NuGet.Config"
