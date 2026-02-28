@@ -1,11 +1,16 @@
 using System;
+using SharpSixteen.Core;
+using SharpSixteen.Core.Database;
 using SharpSixteen.Core.Inputs;
 using SharpSixteen.Core.Jrpg;
 using SharpSixteen.Core.Jrpg.MapData;
+using SharpSixteen.Core.Save;
 using SharpSixteen.ScreenManagers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+
+#nullable enable
 
 namespace SharpSixteen.Screens;
 
@@ -27,11 +32,13 @@ public class WorldScreen : GameScreen
     private const float MoveDelay = 0.15f;
     private readonly Random _random = new();
     private const int EncounterChancePercent = 8; // per step on E tile
+    private readonly GameSaveData? _loadData;
 
-    public WorldScreen(MapId mapId, int spawnIndex = 0)
+    public WorldScreen(MapId mapId, int spawnIndex = 0, GameSaveData? loadData = null)
     {
         _currentMapId = mapId;
         _spawnIndex = spawnIndex;
+        _loadData = loadData;
         TransitionOnTime = TimeSpan.FromMilliseconds(350);
         TransitionOffTime = TimeSpan.FromMilliseconds(350);
         _playerTile = new Point(1, 1);
@@ -42,26 +49,29 @@ public class WorldScreen : GameScreen
     {
         base.LoadContent();
         _content = new ContentManager(ScreenManager.Game.Services, "Content");
-        LoadMap(_currentMapId);
-        var spawn = _map.GetSpawn(_spawnIndex);
-        _playerTile = spawn;
-        _playerPixel = new Vector2(spawn.X * JrpgTile.Width, spawn.Y * JrpgTile.Height);
-        try
+        var saveManager = ScreenManager.Game.Services.GetService<SaveManager>();
+        if (_loadData != null)
         {
-            _playerTexture = _content.Load<Texture2D>("Sprites/Jrpg/Hero");
+            _currentMapId = SaveManager.ParseMapId(_loadData.MapId);
+            LoadMap(_currentMapId);
+            _playerTile = new Point(_loadData.PlayerTileX, _loadData.PlayerTileY);
+            _playerPixel = new Vector2(_playerTile.X * JrpgTile.Width, _playerTile.Y * JrpgTile.Height);
         }
-        catch
+        else
+        {
+            LoadMap(_currentMapId);
+            var spawn = _map.GetSpawn(_spawnIndex);
+            _playerTile = spawn;
+            _playerPixel = new Vector2(spawn.X * JrpgTile.Width, spawn.Y * JrpgTile.Height);
+        }
+        if (saveManager != null)
+            saveManager.UpdatePosition(_currentMapId, _playerTile.X, _playerTile.Y);
+        _playerTexture = ContentHelper.LoadJrpgSprite(_content, "Hero");
+        if (_playerTexture == null)
         {
             try { _playerTexture = _content.Load<Texture2D>("Sprites/blank"); } catch { _playerTexture = null; }
         }
-        try
-        {
-            _npcTexture = _content.Load<Texture2D>("Sprites/Jrpg/Npc");
-        }
-        catch
-        {
-            _npcTexture = null;
-        }
+        _npcTexture = ContentHelper.LoadJrpgSprite(_content, "Npc");
     }
 
     private void LoadMap(MapId id)
@@ -109,6 +119,9 @@ public class WorldScreen : GameScreen
         _playerTile = new Point(nx, ny);
         _playerPixel = new Vector2(nx * JrpgTile.Width, ny * JrpgTile.Height);
         _moveCooldown = MoveDelay;
+        var saveManager = ScreenManager.Game.Services.GetService<SaveManager>();
+        if (saveManager != null)
+            saveManager.UpdatePosition(_currentMapId, _playerTile.X, _playerTile.Y);
 
         // Door: transition to other map
         if (_map.TryGetDoor(nx, ny, out MapId target, out int spawnIndex))
@@ -121,11 +134,22 @@ public class WorldScreen : GameScreen
         // Encounter tile: random battle
         if (_map.IsEncounterTile(nx, ny) && _random.Next(100) < EncounterChancePercent)
         {
-            var battle = new BattleScreen((manager, won) =>
+            int startHp = saveManager?.Current.PlayerHp ?? 30;
+            int startMaxHp = saveManager?.Current.PlayerMaxHp ?? 30;
+            int startMp = saveManager?.Current.PlayerMp ?? 20;
+            int startMaxMp = saveManager?.Current.PlayerMaxMp ?? 20;
+            var enemies = Enemies.All;
+            string enemyId = enemies.Count > 0 ? enemies[_random.Next(enemies.Count)].Id : "Slime";
+            var battle = new BattleScreen((manager, won, hp, maxHp, mp, maxMp) =>
             {
+                if (saveManager != null)
+                {
+                    saveManager.UpdateHp(hp, maxHp);
+                    saveManager.UpdateMp(mp, maxMp);
+                }
                 if (!won)
                     LoadingScreen.Load(manager, false, null, new MainMenuScreen());
-            });
+            }, startHp, startMaxHp, startMp, startMaxMp, enemyId);
             ScreenManager.AddScreen(battle, ControllingPlayer);
         }
     }
@@ -133,6 +157,9 @@ public class WorldScreen : GameScreen
     public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
     {
         base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
+        var saveManager = ScreenManager.Game.Services.GetService<SaveManager>();
+        if (saveManager != null && !otherScreenHasFocus && !coveredByOtherScreen)
+            saveManager.AddTimePlayed(gameTime.ElapsedGameTime.TotalSeconds);
         if (_moveCooldown > 0)
             _moveCooldown -= (float)gameTime.ElapsedGameTime.TotalSeconds;
     }

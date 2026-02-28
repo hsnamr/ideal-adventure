@@ -641,6 +641,18 @@
 /processorParam:TextureFormat=Color
 /build:Tiles/House.png
 
+#begin TilesDungeon/dungeon_tiles_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:TilesDungeon/dungeon_tiles_0.png
+
 #begin Sprites/Jrpg/Hero.png
 /importer:TextureImporter
 /processor:TextureProcessor

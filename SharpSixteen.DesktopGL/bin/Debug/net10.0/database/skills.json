@@ -1,0 +1,16 @@
+[
+  {
+    "Id": "Fira",
+    "Name": "Fira",
+    "MpCost": 12,
+    "Power": 28,
+    "Target": "Enemy"
+  },
+  {
+    "Id": "Cura",
+    "Name": "Cura",
+    "MpCost": 14,
+    "Power": 40,
+    "Target": "Self"
+  }
+]

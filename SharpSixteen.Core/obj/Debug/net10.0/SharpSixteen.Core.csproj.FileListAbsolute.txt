@@ -44,3 +44,8 @@
 /home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/obj/Debug/net10.0/refint/SharpSixteen.Core.dll
 /home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/obj/Debug/net10.0/SharpSixteen.Core.pdb
 /home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/obj/Debug/net10.0/ref/SharpSixteen.Core.dll
+/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/bin/Debug/net10.0/database/enemies.json
+/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/bin/Debug/net10.0/database/events.json
+/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/bin/Debug/net10.0/database/items.json
+/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/bin/Debug/net10.0/database/README.md
+/home/halamri/Workspace/self/Games/ideal-adventure/SharpSixteen.Core/bin/Debug/net10.0/database/skills.json

@@ -14,6 +14,9 @@
     </MonoGameContentReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\SharpSixteen.Core\database\**\*" LinkBase="database" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\SharpSixteen.Core\SharpSixteen.Core.csproj" />
   </ItemGroup>
   <ItemGroup>

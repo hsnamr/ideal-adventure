@@ -274,6 +274,15 @@ namespace SharpSixteen.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Load Game.
+        /// </summary>
+        internal static string LoadGame {
+            get {
+                return ResourceManager.GetString("LoadGame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Loading....
         /// </summary>
         internal static string Loading {

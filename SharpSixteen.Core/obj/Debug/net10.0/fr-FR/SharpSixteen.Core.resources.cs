@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SharpSixteen.Core")]
 [assembly: System.Reflection.AssemblyCopyrightAttribute(" ")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+82025b1cbed0db2cebd284ecf68215ddd105a173")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4622dcbe2648cc857f3346cce2d909f7aca52f17")]
 [assembly: System.Reflection.AssemblyProductAttribute("SharpSixteen.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SharpSixteen.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

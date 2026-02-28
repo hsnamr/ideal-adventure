@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using SharpSixteen.Core.Database;
 using SharpSixteen.Core.Effects;
 using SharpSixteen.Core.Localization;
+using SharpSixteen.Core.Save;
 using SharpSixteen.Core.Settings;
 using SharpSixteen.ScreenManagers;
 using SharpSixteen.Screens;
@@ -87,6 +90,9 @@ namespace SharpSixteen.Core
             leaderboardManager = new SettingsManager<SharpSixteenLeaderboard>(storage);
             Services.AddService(typeof(SettingsManager<SharpSixteenLeaderboard>), leaderboardManager);
 
+            var saveManager = new SaveManager();
+            Services.AddService(typeof(SaveManager), saveManager);
+
             Content.RootDirectory = "Content";
 
             // Configure screen orientations.
@@ -135,6 +141,10 @@ namespace SharpSixteen.Core
 
             // Share the particle manager as a service.
             Services.AddService(typeof(ParticleManager), particleManager);
+
+            // Load optional database JSON (items, skills, events, enemies) from database folder next to executable.
+            string databasePath = Path.Combine(AppContext.BaseDirectory, "database");
+            DatabaseLoader.LoadFromDirectory(databasePath);
         }
     }
 }

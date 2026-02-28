@@ -4,7 +4,7 @@ namespace SharpSixteen.Core.Jrpg.MapData;
 public static class TownMap
 {
     private const string Line0 = "########################################";
-    private const string Line1 = "#..............HHHH..............HHHH..#";
+    private const string Line1 = "#..............HHHH..............HHHH.9#";
     private const string Line2 = "#..............HHHH....N.........HHHH..#";
     private const string Line3 = "#..............HHHH..............HHHH..#";
     private const string Line4 = "#................3..................4..#";

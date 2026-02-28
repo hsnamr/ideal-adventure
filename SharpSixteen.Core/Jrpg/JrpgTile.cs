@@ -1,6 +1,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+#nullable enable
+
 namespace SharpSixteen.Core.Jrpg;
 
 /// <summary>
@@ -12,7 +14,9 @@ public struct JrpgTile
     public const int Height = 16;
     public static readonly Vector2 Size = new(Width, Height);
 
-    public Texture2D Texture { get; set; }
+    public Texture2D? Texture { get; set; }
+    /// <summary>When set, draw this region of the texture (for tileset sheets).</summary>
+    public Rectangle? SourceRect { get; set; }
     public JrpgTileKind Kind { get; set; }
     /// <summary>When Kind is Door, which map to transition to.</summary>
     public MapId DoorTarget { get; set; }

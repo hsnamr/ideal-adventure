@@ -1,4 +1,5 @@
 using System;
+using SharpSixteen.Core.Save;
 using SharpSixteen.ScreenManagers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -37,6 +38,9 @@ class InGameMenuScreen : MenuScreen
 
     private void SaveEntrySelected(object sender, PlayerIndexEventArgs e)
     {
+        var saveManager = ScreenManager.Game.Services.GetService<SaveManager>();
+        if (saveManager != null)
+            saveManager.Save();
         var msg = new MessageBoxScreen("Saved!");
         ScreenManager.AddScreen(msg, e.PlayerIndex);
     }

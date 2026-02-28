@@ -17,6 +17,9 @@ public static class MapDataValidation
     /// <summary>Expected character width of every line in the cave map.</summary>
     public const int CaveWidth = 48;
 
+    /// <summary>Expected character width of every line in the world map.</summary>
+    public const int WorldMapWidth = 40;
+
     /// <summary>Expected character width of every line in house interior maps.</summary>
     public const int HouseWidth = 12;
 

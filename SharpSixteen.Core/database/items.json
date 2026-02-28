@@ -1,0 +1,16 @@
+[
+  {
+    "Id": "HiPotion",
+    "Name": "Hi-Potion",
+    "Kind": "Consumable",
+    "Effect": "HealHp",
+    "Value": 50
+  },
+  {
+    "Id": "ManaHerb",
+    "Name": "Mana Herb",
+    "Kind": "Consumable",
+    "Effect": "HealMp",
+    "Value": 25
+  }
+]

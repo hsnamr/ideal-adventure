@@ -5,6 +5,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
+#nullable enable
+
 namespace SharpSixteen.Core.Jrpg;
 
 /// <summary>
@@ -14,11 +16,20 @@ namespace SharpSixteen.Core.Jrpg;
 /// </summary>
 public class JrpgMap
 {
-    private JrpgTile[,] _tiles;
+    private JrpgTile[,] _tiles = null!;
     private readonly List<Point> _spawns = new();
     private readonly List<Point> _npcs = new();
     private readonly ContentManager _content;
     private readonly string _tileSetPrefix;
+    private Texture2D? _caveTileset;
+
+    private const int CaveTilesPerRow = 23;
+    // Buch tileset: not a strict grid; try row 3 (y=48) for floor/wall/exit.
+    private static Rectangle CaveTileRect(int index) =>
+        new((index % CaveTilesPerRow) * JrpgTile.Width, (index / CaveTilesPerRow) * JrpgTile.Height, JrpgTile.Width, JrpgTile.Height);
+    private static int CaveFloorIndex => 69;
+    private static int CaveWallIndex => 70;
+    private static int CaveExitIndex => 71;
 
     public int Width => _tiles.GetLength(0);
     public int Height => _tiles.GetLength(1);
@@ -26,12 +37,12 @@ public class JrpgMap
     public IReadOnlyList<Point> Spawns => _spawns;
     public IReadOnlyList<Point> NpcPositions => _npcs;
 
-    /// <param name="tileSetPrefix">Content path prefix. Use "Tiles/" and floor=BlockB0, wall=BlockA0, door=Exit for built-in tiles.</param>
-    public JrpgMap(ContentManager content, MapId id, Stream mapStream, string tileSetPrefix = "Tiles/")
+    /// <param name="tileSetPrefix">Content path prefix. If null, uses MapTileSetConfig for the given id (Town/Cave/WorldMap tilesets).</param>
+    public JrpgMap(ContentManager content, MapId id, Stream mapStream, string? tileSetPrefix = null)
     {
         _content = content;
         Id = id;
-        _tileSetPrefix = tileSetPrefix;
+        _tileSetPrefix = tileSetPrefix ?? MapTileSetConfig.GetPrefix(id);
         LoadFromStream(mapStream);
     }
 
@@ -40,12 +51,25 @@ public class JrpgMap
         var lines = new List<string>();
         using (var reader = new StreamReader(stream))
         {
-            string line;
+            string? line;
             while ((line = reader.ReadLine()) != null)
                 lines.Add(line);
         }
 
         if (lines.Count == 0) throw new InvalidOperationException("Empty map file.");
+        if (Id == MapId.Cave)
+        {
+            try
+            {
+                var tex = _content.Load<Texture2D>("TilesDungeon/dungeon_tiles_0");
+                if (tex != null && tex.Width >= 48 && tex.Height >= 32)
+                    _caveTileset = tex;
+                else
+                    _caveTileset = null;
+            }
+            catch { _caveTileset = null; }
+            _caveTileset = null;
+        }
         int width = lines[0].Length;
         int height = lines.Count;
         _tiles = new JrpgTile[width, height];
@@ -68,90 +92,120 @@ public class JrpgMap
         {
             case '.':
                 tile.Kind = JrpgTileKind.Floor;
-                tile.Texture = LoadTexture("BlockB0");
+                if (_caveTileset != null) { tile.Texture = _caveTileset; tile.SourceRect = CaveTileRect(CaveFloorIndex); }
+                else tile.Texture = LoadTexture(MapTileSetConfig.GetFloor(Id), MapTileSetConfig.GetFallbackFloor(Id));
                 break;
             case '#':
                 tile.Kind = JrpgTileKind.Wall;
-                tile.Texture = LoadTexture("BlockA0");
+                if (_caveTileset != null) { tile.Texture = _caveTileset; tile.SourceRect = CaveTileRect(CaveWallIndex); }
+                else tile.Texture = LoadTexture(MapTileSetConfig.GetWall(Id), MapTileSetConfig.GetFallbackWall(Id));
                 break;
             case 'P':
                 tile.Kind = JrpgTileKind.Floor;
-                tile.Texture = LoadTexture("BlockB0");
+                if (_caveTileset != null) { tile.Texture = _caveTileset; tile.SourceRect = CaveTileRect(CaveFloorIndex); }
+                else tile.Texture = LoadTexture(MapTileSetConfig.GetFloor(Id), MapTileSetConfig.GetFallbackFloor(Id));
                 _spawns.Add(new Point(x, y));
                 break;
             case '1':
                 tile.Kind = JrpgTileKind.Door;
-                tile.Texture = LoadTexture("Exit");
+                tile.Texture = LoadTexture(MapTileSetConfig.GetWell(Id), MapTileSetConfig.GetFallbackDoor(Id));
                 tile.DoorTarget = MapId.Cave;
                 tile.DoorSpawnIndex = 0;
                 break;
             case '2':
                 tile.Kind = JrpgTileKind.Door;
-                tile.Texture = LoadTexture("Exit");
-                tile.DoorTarget = MapId.Town;
-                tile.DoorSpawnIndex = 0;
+                if (Id == MapId.Cave && _caveTileset != null) { tile.Texture = _caveTileset; tile.SourceRect = CaveTileRect(CaveExitIndex); }
+                else tile.Texture = LoadTexture(MapTileSetConfig.GetDoor(Id), MapTileSetConfig.GetFallbackDoor(Id));
+                tile.DoorTarget = Id == MapId.Dungeon ? MapId.Field : MapId.Town;
+                tile.DoorSpawnIndex = Id == MapId.WorldMap ? 4 : 0;
                 break;
             case '3':
-                tile.Kind = JrpgTileKind.Door;
-                tile.Texture = LoadTexture("Exit");
-                tile.DoorTarget = MapId.House1;
-                tile.DoorSpawnIndex = 0;
-                _spawns.Add(new Point(x, y));
+                if (Id == MapId.WorldMap)
+                {
+                    tile.Kind = JrpgTileKind.Door;
+                    tile.Texture = LoadTexture(MapTileSetConfig.GetDoor(Id), MapTileSetConfig.GetFallbackDoor(Id));
+                    tile.DoorTarget = MapId.Field;
+                    tile.DoorSpawnIndex = 0;
+                }
+                else if (Id == MapId.Field)
+                {
+                    tile.Kind = JrpgTileKind.Door;
+                    tile.Texture = LoadTexture(MapTileSetConfig.GetDoor(Id), MapTileSetConfig.GetFallbackDoor(Id));
+                    tile.DoorTarget = MapId.Dungeon;
+                    tile.DoorSpawnIndex = 0;
+                }
+                else
+                {
+                    tile.Kind = JrpgTileKind.Door;
+                    tile.Texture = LoadTexture(MapTileSetConfig.GetDoor(Id), MapTileSetConfig.GetFallbackDoor(Id));
+                    tile.DoorTarget = MapId.House1;
+                    tile.DoorSpawnIndex = 0;
+                    _spawns.Add(new Point(x, y));
+                }
                 break;
             case '4':
                 tile.Kind = JrpgTileKind.Door;
-                tile.Texture = LoadTexture("Exit");
+                tile.Texture = LoadTexture(MapTileSetConfig.GetDoor(Id), MapTileSetConfig.GetFallbackDoor(Id));
                 tile.DoorTarget = MapId.House2;
                 tile.DoorSpawnIndex = 0;
                 _spawns.Add(new Point(x, y));
                 break;
             case '5':
                 tile.Kind = JrpgTileKind.Door;
-                tile.Texture = LoadTexture("Exit");
+                tile.Texture = LoadTexture(MapTileSetConfig.GetDoor(Id), MapTileSetConfig.GetFallbackDoor(Id));
                 tile.DoorTarget = MapId.House3;
                 tile.DoorSpawnIndex = 0;
                 _spawns.Add(new Point(x, y));
                 break;
             case '6':
                 tile.Kind = JrpgTileKind.Door;
-                tile.Texture = LoadTexture("Exit");
+                tile.Texture = LoadTexture(MapTileSetConfig.GetDoor(Id), MapTileSetConfig.GetFallbackDoor(Id));
                 tile.DoorTarget = MapId.Town;
                 tile.DoorSpawnIndex = 1;
                 break;
             case '7':
                 tile.Kind = JrpgTileKind.Door;
-                tile.Texture = LoadTexture("Exit");
+                tile.Texture = LoadTexture(MapTileSetConfig.GetDoor(Id), MapTileSetConfig.GetFallbackDoor(Id));
                 tile.DoorTarget = MapId.Town;
                 tile.DoorSpawnIndex = 2;
                 break;
             case '8':
                 tile.Kind = JrpgTileKind.Door;
-                tile.Texture = LoadTexture("Exit");
+                tile.Texture = LoadTexture(MapTileSetConfig.GetDoor(Id), MapTileSetConfig.GetFallbackDoor(Id));
                 tile.DoorTarget = MapId.Town;
                 tile.DoorSpawnIndex = 3;
                 break;
+            case '9':
+                tile.Kind = JrpgTileKind.Door;
+                tile.Texture = LoadTexture(MapTileSetConfig.GetDoor(Id), MapTileSetConfig.GetFallbackDoor(Id));
+                tile.DoorTarget = MapId.WorldMap;
+                tile.DoorSpawnIndex = 0;
+                _spawns.Add(new Point(x, y));
+                break;
             case 'E':
                 tile.Kind = JrpgTileKind.Encounter;
-                tile.Texture = LoadTexture("BlockB0");
+                if (_caveTileset != null) { tile.Texture = _caveTileset; tile.SourceRect = CaveTileRect(CaveFloorIndex); }
+                else tile.Texture = LoadTexture(MapTileSetConfig.GetFloor(Id), MapTileSetConfig.GetFallbackFloor(Id));
                 break;
             case 'H':
                 tile.Kind = JrpgTileKind.House;
-                tile.Texture = LoadTexture("House");
+                tile.Texture = LoadTexture(MapTileSetConfig.GetHouse(Id), "House");
                 break;
             case 'N':
                 tile.Kind = JrpgTileKind.Npc;
-                tile.Texture = LoadTexture("BlockB0");
+                tile.Texture = LoadTexture(MapTileSetConfig.GetFloor(Id), MapTileSetConfig.GetFallbackFloor(Id));
                 _npcs.Add(new Point(x, y));
                 break;
             default:
                 tile.Kind = JrpgTileKind.Floor;
-                tile.Texture = LoadTexture("BlockB0");
+                if (_caveTileset != null) { tile.Texture = _caveTileset; tile.SourceRect = CaveTileRect(CaveFloorIndex); }
+                else tile.Texture = LoadTexture(MapTileSetConfig.GetFloor(Id), MapTileSetConfig.GetFallbackFloor(Id));
                 break;
         }
         return tile;
     }
 
-    private Texture2D LoadTexture(string name)
+    private Texture2D? LoadTexture(string name, string? fallbackName = null)
     {
         try
         {
@@ -159,6 +213,14 @@ public class JrpgMap
         }
         catch
         {
+            if (fallbackName != null)
+            {
+                try
+                {
+                    return _content.Load<Texture2D>("Tiles/" + fallbackName);
+                }
+                catch { }
+            }
             return null;
         }
     }
@@ -218,7 +280,10 @@ public class JrpgMap
                 {
                     dest.X = x * JrpgTile.Width;
                     dest.Y = y * JrpgTile.Height;
-                    batch.Draw(t.Texture, dest, Color.White);
+                    if (t.SourceRect is Rectangle src)
+                        batch.Draw(t.Texture, dest, src, Color.White);
+                    else
+                        batch.Draw(t.Texture, dest, Color.White);
                 }
             }
     }

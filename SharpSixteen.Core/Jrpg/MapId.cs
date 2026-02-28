@@ -6,8 +6,11 @@ namespace SharpSixteen.Core.Jrpg;
 public enum MapId
 {
     Town,
+    Field,
     Cave,
+    Dungeon,
     House1,
     House2,
-    House3
+    House3,
+    WorldMap
 }

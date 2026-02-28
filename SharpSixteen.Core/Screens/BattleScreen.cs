@@ -1,42 +1,63 @@
 using System;
+using SharpSixteen.Core;
+using SharpSixteen.Core.Database;
 using SharpSixteen.Core.Inputs;
 using SharpSixteen.ScreenManagers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 
+#nullable enable
+
 namespace SharpSixteen.Screens;
 
 /// <summary>
-/// Simple SNES-style turn-based battle: Attack, Defend, Run.
+/// Simple SNES-style turn-based battle: Attack, Magic, Defend, Run.
 /// One enemy; win returns to world, lose returns to main menu (or last save).
 /// </summary>
 public class BattleScreen : GameScreen
 {
-    private SpriteFont _font;
-    private Texture2D _panel;
-    private Texture2D _playerSprite;
-    private Texture2D _enemySprite;
-    private ContentManager _content;
-    private readonly Action<ScreenManager, bool> _onBattleEnd; // (manager, victory)
+    private SpriteFont _font = null!;
+    private Texture2D _panel = null!;
+    private Texture2D? _playerSprite;
+    private Texture2D? _enemySprite;
+    private ContentManager _content = null!;
+    private readonly Action<ScreenManager, bool, int, int, int, int> _onBattleEnd; // (manager, victory, hp, maxHp, mp, maxMp)
     private int _menuIndex;
-    private static readonly string[] MenuItems = { "Attack", "Defend", "Run" };
+    private static readonly string[] MenuItems = { "Attack", "Magic", "Defend", "Run" };
     private BattleState _state = BattleState.PlayerTurn;
     private float _stateTimer;
     private string _message = "Enemy approaches!";
 
-    private int _playerHp = 30;
+    private int _playerHp;
     private int _playerMaxHp = 30;
-    private int _enemyHp = 15;
+    private int _playerMp;
+    private int _playerMaxMp = 20;
+    private int _enemyHp;
     private int _enemyMaxHp = 15;
+    private int _enemyAttack = 3;
+    private string _enemyName = "Enemy";
+    private readonly string _enemySpriteId;
     private const int PlayerAttack = 5;
-    private const int EnemyAttack = 3;
     private const int DefendReduction = 2;
     private bool _playerDefending;
 
-    public BattleScreen(Action<ScreenManager, bool> onBattleEnd)
+    private bool _inMagicMenu;
+    private int _magicIndex;
+
+    public BattleScreen(Action<ScreenManager, bool, int, int, int, int> onBattleEnd, int playerHp = 30, int playerMaxHp = 30, int playerMp = 20, int playerMaxMp = 20, string? enemyId = null)
     {
-        _onBattleEnd = onBattleEnd ?? ((s, b) => { });
+        _onBattleEnd = onBattleEnd ?? ((s, b, h, mh, mp, mm) => { });
+        _playerHp = Math.Clamp(playerHp, 0, playerMaxHp);
+        _playerMaxHp = Math.Max(1, playerMaxHp);
+        _playerMp = Math.Clamp(playerMp, 0, playerMaxMp);
+        _playerMaxMp = Math.Max(0, playerMaxMp);
+        var enemy = Enemies.Get(enemyId ?? "Slime") ?? Enemies.All[0];
+        _enemyName = enemy.Name;
+        _enemyHp = enemy.Hp;
+        _enemyMaxHp = enemy.Hp;
+        _enemyAttack = Math.Max(1, enemy.Attack);
+        _enemySpriteId = enemy.SpriteId;
         TransitionOnTime = TimeSpan.FromMilliseconds(400);
         TransitionOffTime = TimeSpan.FromMilliseconds(400);
     }
@@ -47,8 +68,8 @@ public class BattleScreen : GameScreen
         _content = new ContentManager(ScreenManager.Game.Services, "Content");
         _font = _content.Load<SpriteFont>("Fonts/Hud");
         try { _panel = _content.Load<Texture2D>("Sprites/blank"); } catch { }
-        try { _playerSprite = _content.Load<Texture2D>("Sprites/Jrpg/Hero"); } catch { _playerSprite = null; }
-        try { _enemySprite = _content.Load<Texture2D>("Sprites/Jrpg/EnemySlime"); } catch { _enemySprite = null; }
+        _playerSprite = ContentHelper.LoadJrpgSprite(_content, "Hero");
+        _enemySprite = ContentHelper.LoadEnemy(_content, _enemySpriteId);
     }
 
     public override void UnloadContent()
@@ -60,22 +81,71 @@ public class BattleScreen : GameScreen
     {
         if (_state != BattleState.PlayerTurn) return;
 
+        if (_inMagicMenu)
+        {
+            var skills = Skills.All;
+            if (inputState.IsMenuUp(ControllingPlayer))
+                _magicIndex = (_magicIndex - 1 + skills.Count) % Math.Max(1, skills.Count);
+            else if (inputState.IsMenuDown(ControllingPlayer))
+                _magicIndex = (_magicIndex + 1) % Math.Max(1, skills.Count);
+            else if (inputState.IsMenuSelect(ControllingPlayer, out _))
+            {
+                if (skills.Count > 0)
+                {
+                    var skill = skills[_magicIndex];
+                    if (_playerMp >= skill.MpCost)
+                        ExecuteMagic(skill);
+                    else
+                        _message = "Not enough MP!";
+                    _inMagicMenu = false;
+                }
+            }
+            else if (inputState.IsMenuCancel(ControllingPlayer, out _))
+                _inMagicMenu = false;
+            return;
+        }
+
         if (inputState.IsMenuUp(ControllingPlayer))
-        {
             _menuIndex = (_menuIndex - 1 + MenuItems.Length) % MenuItems.Length;
-        }
         else if (inputState.IsMenuDown(ControllingPlayer))
-        {
             _menuIndex = (_menuIndex + 1) % MenuItems.Length;
-        }
         else if (inputState.IsMenuSelect(ControllingPlayer, out _))
-        {
             ExecuteCommand();
+    }
+
+    private void ExecuteMagic(SkillRecord skill)
+    {
+        _playerMp = Math.Max(0, _playerMp - skill.MpCost);
+        if (skill.Target == "Self")
+        {
+            _playerHp = Math.Min(_playerMaxHp, _playerHp + skill.Power);
+            _message = $"{skill.Name}! Recovered {skill.Power} HP.";
         }
+        else
+        {
+            _enemyHp = Math.Max(0, _enemyHp - skill.Power);
+            _message = $"{skill.Name}! Dealt {skill.Power} damage!";
+            if (_enemyHp <= 0)
+            {
+                _state = BattleState.Victory;
+                _stateTimer = 1.2f;
+                _onBattleEnd(ScreenManager, true, _playerHp, _playerMaxHp, _playerMp, _playerMaxMp);
+                return;
+            }
+        }
+        _state = BattleState.EnemyTurn;
+        _stateTimer = 1.2f;
     }
 
     private void ExecuteCommand()
     {
+        if (MenuItems[_menuIndex] == "Magic")
+        {
+            _inMagicMenu = true;
+            _magicIndex = 0;
+            return;
+        }
+
         switch (MenuItems[_menuIndex])
         {
             case "Attack":
@@ -86,7 +156,7 @@ public class BattleScreen : GameScreen
                 {
                     _state = BattleState.Victory;
                     _stateTimer = 1.2f;
-                    _onBattleEnd(ScreenManager, true);
+                    _onBattleEnd(ScreenManager, true, _playerHp, _playerMaxHp, _playerMp, _playerMaxMp);
                 }
                 else
                 {
@@ -104,7 +174,7 @@ public class BattleScreen : GameScreen
                 _message = "Fled!";
                 _state = BattleState.Victory; // treat run as success
                 _stateTimer = 0.8f;
-                _onBattleEnd(ScreenManager, true);
+                _onBattleEnd(ScreenManager, true, _playerHp, _playerMaxHp, _playerMp, _playerMaxMp);
                 break;
         }
     }
@@ -120,7 +190,7 @@ public class BattleScreen : GameScreen
             _stateTimer -= dt;
             if (_stateTimer <= 0)
             {
-                int damage = Math.Max(1, EnemyAttack - (_playerDefending ? DefendReduction : 0));
+                int damage = Math.Max(1, _enemyAttack - (_playerDefending ? DefendReduction : 0));
                 _playerHp = Math.Max(0, _playerHp - damage);
                 _playerDefending = false;
                 _message = $"Enemy hit for {damage}!";
@@ -128,7 +198,7 @@ public class BattleScreen : GameScreen
                 {
                     _state = BattleState.Defeat;
                     _stateTimer = 1.5f;
-                    _onBattleEnd(ScreenManager, false);
+                    _onBattleEnd(ScreenManager, false, 0, _playerMaxHp, _playerMp, _playerMaxMp);
                 }
                 else
                 {
@@ -169,19 +239,36 @@ public class BattleScreen : GameScreen
         if (_panel != null)
             batch.Draw(_panel, new Rectangle(0, panelY, (int)viewSize.X, panelH), new Color(20, 20, 40, 230));
 
-        // Text: HP and message
+        // Text: HP, MP and message
         _font ??= ScreenManager.Font;
-        batch.DrawString(_font, $"HP: {_playerHp}/{_playerMaxHp}", new Vector2(20, 20), Color.LightGreen);
-        batch.DrawString(_font, $"Enemy HP: {_enemyHp}/{_enemyMaxHp}", new Vector2(20, 42), Color.Orange);
+        batch.DrawString(_font, $"HP: {_playerHp}/{_playerMaxHp}  MP: {_playerMp}/{_playerMaxMp}", new Vector2(20, 20), Color.LightGreen);
+        batch.DrawString(_font, $"Enemy HP: {_enemyHp}/{_enemyMaxHp}  ({_enemyName})", new Vector2(20, 42), Color.Orange);
         batch.DrawString(_font, _message, new Vector2(20, panelY + 20), Color.White);
 
         if (_state == BattleState.PlayerTurn)
         {
-            for (int i = 0; i < MenuItems.Length; i++)
+            if (_inMagicMenu)
             {
-                var pos = new Vector2(20, panelY + 60 + i * 28);
-                var color = i == _menuIndex ? Color.Gold : Color.White;
-                batch.DrawString(_font, (i == _menuIndex ? "> " : "  ") + MenuItems[i], pos, color);
+                var skills = Skills.All;
+                batch.DrawString(_font, "Magic", new Vector2(20, panelY + 50), Color.Gray);
+                for (int i = 0; i < skills.Count; i++)
+                {
+                    var s = skills[i];
+                    var pos = new Vector2(20, panelY + 78 + i * 28);
+                    var color = i == _magicIndex ? Color.Gold : Color.White;
+                    var canUse = _playerMp >= s.MpCost;
+                    if (!canUse) color = Color.Gray;
+                    batch.DrawString(_font, (i == _magicIndex ? "> " : "  ") + $"{s.Name} ({s.MpCost} MP)", pos, color);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < MenuItems.Length; i++)
+                {
+                    var pos = new Vector2(20, panelY + 60 + i * 28);
+                    var color = i == _menuIndex ? Color.Gold : Color.White;
+                    batch.DrawString(_font, (i == _menuIndex ? "> " : "  ") + MenuItems[i], pos, color);
+                }
             }
         }
 

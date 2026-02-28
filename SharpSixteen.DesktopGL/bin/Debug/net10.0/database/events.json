@@ -1,0 +1,16 @@
+[
+  {
+    "Id": "inn_rest",
+    "Trigger": "Talk",
+    "Text": "Rest here and recover your strength?",
+    "PortraitId": "",
+    "NextEventId": ""
+  },
+  {
+    "Id": "shop_hello",
+    "Trigger": "Talk",
+    "Text": "Welcome! We have potions and ethers.",
+    "PortraitId": "shopkeeper",
+    "NextEventId": ""
+  }
+]

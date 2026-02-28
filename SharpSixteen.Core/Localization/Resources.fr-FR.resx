@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -119,6 +119,9 @@
   </resheader>
   <data name="Play" xml:space="preserve">
     <value>Jouer</value>
+  </data>
+  <data name="LoadGame" xml:space="preserve">
+    <value>Charger la partie</value>
   </data>
   <data name="Settings" xml:space="preserve">
     <value>Paramètres</value>

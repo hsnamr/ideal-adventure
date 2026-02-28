@@ -1,0 +1,18 @@
+[
+  {
+    "Id": "Wolf",
+    "Name": "Wolf",
+    "SpriteId": "Wolf",
+    "Hp": 20,
+    "Attack": 5,
+    "Experience": 9
+  },
+  {
+    "Id": "Spider",
+    "Name": "Giant Spider",
+    "SpriteId": "Spider",
+    "Hp": 14,
+    "Attack": 4,
+    "Experience": 7
+  }
+]
